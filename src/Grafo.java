@@ -1,11 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class Grafo {
 
     List<Nodo> nodos = new ArrayList<>();
-    List<Arco> arcos = new ArrayList<>();
+    List<Conexion> conexion = new ArrayList<>();
 
     public Grafo() {
     }
@@ -14,56 +13,52 @@ public class Grafo {
     public void addNodo(String nombre) {
         Nodo nodo = new Nodo();
         nodo.setNombre(nombre);
-        nodos.add(nodo);         // Agregar el nodo a la lista de nodos
+        nodos.add(nodo); // Agregar el nodo a la lista de nodos
     }
 
-    // Metodo para agregar un arco entre dos nodos, usando los nombres de los nodos
-    public void addArco(String origen, String destino){
+    // Metodo para agregar una conexion entre dos nodos, usando los nombres de los nodos
+    public void addConexion(String origen, String destino) {
 
         // Buscar los nodos de origen y destino en la lista de nodos
         Nodo nodoOrigen = buscarNodo(origen);
         Nodo nodoDestino = buscarNodo(destino);
 
-        // Lanzar excepciones si no se encuentran los nodos
+        // Validar que ambos nodos existen
         if (nodoOrigen == null) {
-            throw new RuntimeException("Error en la Búsqueda: NodoOrigen no encontrado");
+            System.out.println("Error: NodoOrigen no encontrado (" + origen + ")");
+            return; // Termina si el nodo origen no se encuentra
         }
         if (nodoDestino == null) {
-            throw new RuntimeException("Error en la Búsqueda: NodoDestino no encontrado");
+            System.out.println("Error: NodoDestino no encontrado (" + destino + ")");
+            return; // Termina si el nodo destino no se encuentra
         }
 
-        // Agregar el arco entre los nodos
-        addArco(nodoOrigen, nodoDestino);
-    }
+        // Crear la primera conexion (de origen a destino)
+        Conexion conexion = new Conexion();
+        conexion.setOrigen(nodoOrigen);
+        conexion.setDestino(nodoDestino);
+        this.conexion.add(conexion); // Agregar la conexion a la lista
+        nodoOrigen.agregarArco(conexion); // Asociar la conexion al nodo de origen
 
-    // Metodo para agregar un arco, usando los objetos Nodo
-    public void addArco(Nodo nodoOrigen, Nodo nodoDestino) {
-        // Crear un arco entre origen y destino
-        Arco arco = new Arco();
-        arco.setOrigen(nodoOrigen);
-        arco.setDestino(nodoDestino);
-        arcos.add(arco);              // Añadir el arco a la lista de arcos
-        nodoOrigen.agregarArco(arco); // Asociar el arco al nodo de origen
-
-        // Crear el arco inverso (destino a origen)
-        arco = new Arco();
-        arco.setOrigen(nodoDestino);
-        arco.setDestino(nodoOrigen);
-        arcos.add(arco);
-        nodoDestino.agregarArco(arco);
+        // Crear la conexion inversa (de destino a origen)
+        conexion = new Conexion();
+        conexion.setOrigen(nodoDestino);
+        conexion.setDestino(nodoOrigen);
+        this.conexion.add(conexion); // Agregar la conexion a la lista
+        nodoDestino.agregarArco(conexion); // Asociar la conexion al nodo destino
     }
 
     // Metodo para buscar un nodo por su nombre
     public Nodo buscarNodo(String nombre) {
         for (Nodo nodo : nodos) {
             if (nodo.getNombre().equals(nombre)) {
-                return nodo;  // Devolver el nodo si se encuentra
+                return nodo; // Devolver el nodo si se encuentra
             }
         }
-        return null;  // Retornar null si no se encuentra
+        return null; // Retornar null si no se encuentra
     }
 
-    // Metodo para buscar una ruta entre dos nodos, usando sus nombres
+    // Metodo para buscar una ruta entre dos nodos usando sus nombres
     public List<Nodo> buscarRuta(String origen, String destino) {
 
         // Buscar nodos de origen y destino
@@ -71,47 +66,47 @@ public class Grafo {
         Nodo nodoDestino = buscarNodo(destino);
         List<Nodo> nodosRuta = new ArrayList<>();
 
-        // Lanzar excepciones si no se encuentran los nodos
+        // Verificar si se encuentran los nodos
         if (nodoOrigen == null) {
-            throw new RuntimeException("Error en la Búsqueda: NodoOrigen no encontrado");
+            System.out.println("Error: NodoOrigen no encontrado");
         }
         if (nodoDestino == null) {
-            throw new RuntimeException("Error en la Búsqueda: NodoDestino no encontrado");
+            System.out.println("Error: NodoDestino no encontrado");
         }
 
-        // Intentar encontrar una ruta usando DFS (Depth First Search)
-        if (buscarRutaDFS(nodosRuta, nodoOrigen, nodoDestino)) {
-            return nodosRuta;  // Retornar la lista de nodos si se encuentra la ruta
+        // Intentar encontrar una ruta usando DFS
+        if (inicializaDFS(nodosRuta, nodoOrigen, nodoDestino)) {
+            return nodosRuta; // Retornar la lista de nodos si se encuentra la ruta
         } else {
-            return null;  // Retornar null si no se encuentra la ruta
+            return null; // Retornar null si no se encuentra la ruta
         }
     }
 
-    // Metodo privado que implementa la búsqueda de rutas con DFS
-    private boolean buscarRutaDFS(List<Nodo> nodosRuta, Nodo nodoOrigen, Nodo nodoDestino) {
+    // Metodo para buscar una ruta entre dos nodos usando DFS
+    public boolean inicializaDFS(List<Nodo> nodosRuta, Nodo nodoOrigen, Nodo nodoDestino) {
 
         // Lista para controlar los nodos visitados
         List<Nodo> nodosVisitados = new ArrayList<>();
 
-        // Llamada recursiva a DFS
+        // Iniciar la busqueda con DFS
         return dfs(nodoOrigen, nodoDestino, nodosRuta, nodosVisitados);
     }
 
-    // DFS en una sola función
+    // Metodo DFS simple
     private boolean dfs(Nodo actual, Nodo destino, List<Nodo> nodosRuta, List<Nodo> visitados) {
 
-        // Agregar el nodo actual a la ruta y marcarlo como visitado
+        // Marcar el nodo actual como visitado y agregarlo a la ruta
         visitados.add(actual);
         nodosRuta.add(actual);
 
-        // Si el nodo actual es el destino, retornar true
+        // Si llegamos al destino, retornamos true
         if (actual.equals(destino)) {
             return true;
         }
 
         // Recorrer los nodos adyacentes
         for (Nodo adyacente : actual.getNodosAdyacentes()) {
-            // Continuar la búsqueda si el nodo adyacente no ha sido visitado
+            // Si no ha sido visitado, continuamos la busqueda
             if (!visitados.contains(adyacente)) {
                 if (dfs(adyacente, destino, nodosRuta, visitados)) {
                     return true; // Ruta encontrada
@@ -119,10 +114,11 @@ public class Grafo {
             }
         }
 
-        // Si no se encuentra el destino, remover el nodo actual de la ruta y retornar false
+        // Si no encontramos el destino, eliminamos el nodo de la ruta y regresamos false
         nodosRuta.remove(actual);
         return false;
     }
+
 
 
 }

@@ -3,8 +3,8 @@ import java.util.List;
 
 public class Nodo {
 
-    private String 		nombre;
-    private List<Arco>	arcos = new ArrayList<>();
+    private String nombre;
+    private List<Conexion> conexiones = new ArrayList<>();
 
     public Nodo() { }
 
@@ -15,28 +15,29 @@ public class Nodo {
         this.nombre = nombre;
     }
 
-    public void agregarArco(Arco arco) {
-        arcos.add(arco);
+    public void agregarArco(Conexion arco) {
+        conexiones.add(arco);
     }
 
-    public List<Arco> getArcos() {
-        return arcos;
+    public List<Conexion> getConexiones() {
+        return conexiones;
     }
 
     public List<Nodo> getNodosAdyacentes() {
         List<Nodo> nodos = new ArrayList<>();
 
-        // por cada arco donde el nodo es origen
-        for (Arco arco : arcos) {
-            // si el arco no es reflexivo
-            if (arco.getDestino() != this)
-                // agrega el nodo destino a la lista
-                // de nodos adyacentes
-                nodos.add(arco.getDestino());
+        // Por cada conexion donde el nodo es origen
+        for (Conexion conexion : conexiones) {
+            // Si la conexion no es reflexiva
+            if (conexion.getDestino() != this) {
+                // Agrega el nodo destino a la lista de nodos adyacentes
+                nodos.add(conexion.getDestino());
+            }
         }
 
-        // retorna la lista de nodos adyacentes
+        // Retorna la lista de nodos adyacentes
         return nodos;
     }
+
 
 }

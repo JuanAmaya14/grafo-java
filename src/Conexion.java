@@ -1,10 +1,10 @@
-public class Arco {
+public class Conexion {
 
     private Nodo origen;
 
     private Nodo destino;
 
-    public Arco() {	}
+    public Conexion() {	}
 
     public Nodo getOrigen() {
         return origen;
