@@ -4,7 +4,10 @@ import java.util.List;
 public class Grafo {
 
     List<Nodo> nodos = new ArrayList<>();
-    List<Conexion> conexion = new ArrayList<>();
+    // Lista que almacena todas las conexiones en el grafo,
+    // permitiendo una vista global de todas las relaciones entre nodos.
+    // Esto incluye cada conexión entre nodos, tanto de origen a destino como viceversa.
+    List<Conexion> todasLasConexiones = new ArrayList<>();
 
     public Grafo() {
     }
@@ -16,7 +19,7 @@ public class Grafo {
         nodos.add(nodo); // Agregar el nodo a la lista de nodos
     }
 
-    // Metodo para agregar una conexion entre dos nodos, usando los nombres de los nodos
+    // Metodo para agregar una todasLasConexiones entre dos nodos, usando los nombres de los nodos
     public void addConexion(String origen, String destino) {
 
         // Buscar los nodos de origen y destino en la lista de nodos
@@ -33,19 +36,19 @@ public class Grafo {
             return; // Termina si el nodo destino no se encuentra
         }
 
-        // Crear la primera conexion (de origen a destino)
+        // Crear la primera todasLasConexiones (de origen a destino)
         Conexion conexion = new Conexion();
         conexion.setOrigen(nodoOrigen);
         conexion.setDestino(nodoDestino);
-        this.conexion.add(conexion); // Agregar la conexion a la lista
-        nodoOrigen.agregarArco(conexion); // Asociar la conexion al nodo de origen
+        this.todasLasConexiones.add(conexion); // Agregar la todasLasConexiones a la lista
+        nodoOrigen.agregarConexion(conexion); // Asociar la todasLasConexiones al nodo de origen
 
-        // Crear la conexion inversa (de destino a origen)
+        // Crear la todasLasConexiones inversa (de destino a origen)
         conexion = new Conexion();
         conexion.setOrigen(nodoDestino);
         conexion.setDestino(nodoOrigen);
-        this.conexion.add(conexion); // Agregar la conexion a la lista
-        nodoDestino.agregarArco(conexion); // Asociar la conexion al nodo destino
+        this.todasLasConexiones.add(conexion); // Agregar la todasLasConexiones a la lista
+        nodoDestino.agregarConexion(conexion); // Asociar la todasLasConexiones al nodo destino
     }
 
     // Metodo para buscar un nodo por su nombre
@@ -68,10 +71,12 @@ public class Grafo {
 
         // Verificar si se encuentran los nodos
         if (nodoOrigen == null) {
-            System.out.println("Error: NodoOrigen no encontrado");
+            System.out.println("Error: NodoOrigen no encontrado (" + origen + ")");
+            return null; // Termina si el nodo origen no se encuentra
         }
         if (nodoDestino == null) {
-            System.out.println("Error: NodoDestino no encontrado");
+            System.out.println("Error: NodoDestino no encontrado (" + destino + ")");
+            return null; // Termina si el nodo destino no se encuentra
         }
 
         // Intentar encontrar una ruta usando DFS
@@ -82,6 +87,11 @@ public class Grafo {
         }
     }
 
+    /*
+    *
+    * DFS (Depth-First Search)
+    *
+    */
     // Metodo para buscar una ruta entre dos nodos usando DFS
     public boolean inicializaDFS(List<Nodo> nodosRuta, Nodo nodoOrigen, Nodo nodoDestino) {
 
@@ -118,7 +128,5 @@ public class Grafo {
         nodosRuta.remove(actual);
         return false;
     }
-
-
 
 }

@@ -4,7 +4,10 @@ import java.util.List;
 public class Nodo {
 
     private String nombre;
-    private List<Conexion> conexiones = new ArrayList<>();
+    // Lista que almacena las conexiones adyacentes a este nodo.
+    // Estas conexiones representan las relaciones directas desde este nodo a otros nodos.
+    // permitiendo acceder rápidamente a los nodos adyacentes.
+    private List<Conexion> adyacencias = new ArrayList<>();
 
     public Nodo() { }
 
@@ -15,29 +18,28 @@ public class Nodo {
         this.nombre = nombre;
     }
 
-    public void agregarArco(Conexion arco) {
-        conexiones.add(arco);
+    public void agregarConexion(Conexion arco) {
+        adyacencias.add(arco);
     }
 
-    public List<Conexion> getConexiones() {
-        return conexiones;
+    public List<Conexion> getAdyacencias() {
+        return adyacencias;
     }
 
+    // Un nodo es adyacente a otro cuando hay una conexion que los une directamente
     public List<Nodo> getNodosAdyacentes() {
         List<Nodo> nodos = new ArrayList<>();
 
-        // Por cada conexion donde el nodo es origen
-        for (Conexion conexion : conexiones) {
-            // Si la conexion no es reflexiva
+        // Recorre todas las conexiones asociadas a este nodo (adyacencias)
+        for (Conexion conexion : adyacencias) {
+            // Si la conexion no es reflexiva (es decir, el nodo de destino no es el mismo que el nodo actual)
             if (conexion.getDestino() != this) {
-                // Agrega el nodo destino a la lista de nodos adyacentes
+                // Agrega el nodo de destino a la lista de nodos adyacentes (nodos directamente conectados)
                 nodos.add(conexion.getDestino());
             }
         }
 
-        // Retorna la lista de nodos adyacentes
+        // Retorna la lista completa de nodos que estan conectados directamente a este nodo
         return nodos;
     }
-
-
 }
